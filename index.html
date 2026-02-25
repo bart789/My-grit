@@ -105,19 +105,55 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 .emp{text-align:center;padding:30px 16px;color:var(--t3);font-size:13px;font-weight:500}
 .lnk{color:var(--co);font-weight:700;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;border:none;background:none;font-family:var(--f);padding:5px 0}
 .divider{height:1px;background:var(--bd);margin:6px 0}
-.ring-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
-.ring-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:14px 8px 12px;text-align:center;box-shadow:var(--sh);position:relative;overflow:hidden}
+.ring-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+.ring-grid.rg-2{grid-template-columns:1fr 1fr}
+.ring-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:16px 20px;text-align:left;box-shadow:var(--sh);position:relative;overflow:hidden;display:flex;align-items:center;gap:16px}
 .ring-card::after{content:'';position:absolute;top:-30%;right:-20%;width:60%;height:60%;background:radial-gradient(circle,rgba(255,255,255,.03) 0%,transparent 70%);pointer-events:none}
-.rc-ring{width:64px;height:64px;margin:0 auto 8px}
-.rc-ring svg{width:64px;height:64px}
-.rc-val{font-size:20px;font-weight:800;line-height:1;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
-.rc-u{font-size:9px;font-weight:400;opacity:.6}
-.rc-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
-.rc-sub{font-size:8px;color:var(--t3);font-weight:500;margin-top:2px}
+.rc-ring{width:56px;height:56px;flex-shrink:0}
+.rc-ring svg{width:56px;height:56px}
+.rc-val{font-size:18px;font-weight:800;line-height:1;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.rc-u{font-size:10px;font-weight:400;opacity:.6}
+.rc-info{display:flex;flex-direction:column;justify-content:center;min-width:0}
+.rc-label{font-size:13px;font-weight:700;color:var(--t1);letter-spacing:.01em;margin-bottom:1px}
+.rc-sub{font-size:11px;color:var(--t3);font-weight:500}
+/* PIN LOCK */
+.lock-scr{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+.lock-box{text-align:center;width:100%;max-width:320px}
+.lock-logo{width:56px;height:56px;object-fit:contain;margin-bottom:16px;opacity:.8}
+.lock-title{font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.03em;margin-bottom:4px}
+.lock-sub{font-size:13px;color:var(--t3);margin-bottom:28px;font-weight:500}
+.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:8px;height:28px;align-items:center}
+.pin-dots span{width:14px;height:14px;border-radius:50%;border:2px solid var(--t3);transition:all .15s ease}
+.pin-dots span.filled{background:var(--co);border-color:var(--co);transform:scale(1.15)}
+.pin-error{font-size:12px;color:var(--rd);height:20px;margin-bottom:12px;font-weight:600}
+.pin-pad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:260px;margin:0 auto}
+.pin-pad button{height:62px;border-radius:50%;background:var(--bg2);border:1px solid var(--bd);color:var(--t1);font-size:24px;font-weight:700;font-family:var(--f);cursor:pointer;transition:all .12s ease;-webkit-tap-highlight-color:transparent}
+.pin-pad button:active{background:var(--co);color:#fff;transform:scale(.93)}
+.pin-pad .pin-fn{font-size:14px;background:transparent;border:none;color:var(--t3)}
+.pin-pad .pin-fn svg{width:22px;height:22px}
+.pin-pad .pin-fn:active{color:var(--co)}
+.lock-scr.shake .pin-dots{animation:pinShake .4s ease}
+@keyframes pinShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 </style>
 </head>
 <body>
-<div class="app">
+<!-- PIN LOCK SCREEN -->
+<div id="lockScreen" class="lock-scr">
+<div class="lock-box">
+<img class="lock-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADuUlEQVR42u2ZTWhVRxSAP/OCIS+kTmnMKkXTWmKhixQVFZpWCurCroTSjUwRRKG1glC6GBfuxrWuDOiiA10VLYUKglZaElSqKC2F0jbRgoo1JTrmhieJvugiJ3AZ7n0VDLnX9+aDu7hn7pwzc+bnzJkLkUgkEolEIpFIJBKJtBzLijLsje4B9gJPgWFl3f2WcYA3egyoARMi6gWqyro1S92WtgI6/4V0/BrwUJ5rwIQ3+vOmdwCwC7gFKKAijxKZbgUHdANzGfI5KWt6B9Ry7LZJWdM7YFRGup6S1UU2+tJGAW/0eeBtYBZYDowq6z7J+XYcuJia8gmwOS8KeKNPAZtEdztwU1n3fmlmgDf6KvAYOAdcAi4AHd7oqZwqY8F67wbGc3Q/kI3yguj+EZgWm6VZAq8B92Q3r6am+LdZTlDWbQc2yMgnwAaRhZ2fAk6nlkhVbEyIzeId4I1+C5gEOoOiijTyjDf6ekbVr4A+YBWwP0Pvb8APoqMSFHcCk2K7WAco6/6W0Zlt8FnFG90X1PtGOqeUdd8FnR+QUc/bo2aBbrH9QrQv0hJYLk5IZJpWgtH6HRgB+oN6R+UkGHI2FS0IokVNbHSWLQpcl4b9BUxLkhOGuV+VdYf/R88RiSZJ4MiK6HgTqCnr3i1lMuSNPglsDkaoDjwCBoDdMv2z6u4DjgF/Ah2BAxLgirJub9Pk4t7old7olUW2oa3Azu8BfgJ+9kbvLqod7QU7v57aRFsDb7RqULbipZ4Bsp6/ll28kpEFvgEMAj5HxVpv9AhwQyJKGAL/AD5V1v1XxmToJjAl5/yZjGyvF/heWTf8HDdG2+R0GYbBDgmDK5R1/aVxgDf6niQrTzNGbmH01ynrBoJ6B4FEWXcikI8BvzTQtQzYqqzrKUsUmASeNGjwoCyLkD3AgQz5IPBOzgVJVWxNlCkZquXs5HXZZyaVdXNBvS+BO8xfhn4W5AnTcnCqNDh618qUDPVKg8POe2CHsm4oo+pBSaHvAocy9G4EPpLZVQ+KHwE9i5EMLdYSuAGslg4v5PidwMfKuq6MWXMRuCxn+27gsshCJ3QBO0XXgl4vKfQ/pTkJKuu2MH+t/SEwJM+4su6VBhcoM6n3mbwLDmXdq9LZ94APxMa/YrN8ydBz7BnDwOvBGq/LKN9S1u1r9lxgXU6qm0hZ0ydDVfJ/jFRbwQEJ+T9GklZwwPFUxKinwuVqKVtSivo9fpX56+3bIuoDvLJuPa2EN1p7ozWRSCQSiUQikUgkEolElpJnwrI5R/LzchsAAAAASUVORK5CYII=" alt="">
+<div class="lock-title">Get It Together</div>
+<div class="lock-sub">Enter PIN to continue</div>
+<div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div>
+<div class="pin-error" id="pinError"></div>
+<div class="pin-pad">
+<button onclick="pinKey(1)">1</button><button onclick="pinKey(2)">2</button><button onclick="pinKey(3)">3</button>
+<button onclick="pinKey(4)">4</button><button onclick="pinKey(5)">5</button><button onclick="pinKey(6)">6</button>
+<button onclick="pinKey(7)">7</button><button onclick="pinKey(8)">8</button><button onclick="pinKey(9)">9</button>
+<button class="pin-fn" onclick="pinSetup()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.32 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button><button onclick="pinKey(0)">0</button><button class="pin-fn" onclick="pinDel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg></button>
+</div>
+</div>
+</div>
+<div class="app" id="mainApp" style="display:none">
 <!-- DASHBOARD -->
 <div id="s-dash" class="scr act">
 <div class="hdr"><img class="hdr-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADuUlEQVR42u2ZTWhVRxSAP/OCIS+kTmnMKkXTWmKhixQVFZpWCurCroTSjUwRRKG1glC6GBfuxrWuDOiiA10VLYUKglZaElSqKC2F0jbRgoo1JTrmhieJvugiJ3AZ7n0VDLnX9+aDu7hn7pwzc+bnzJkLkUgkEolEIpFIJBKJtBzLijLsje4B9gJPgWFl3f2WcYA3egyoARMi6gWqyro1S92WtgI6/4V0/BrwUJ5rwIQ3+vOmdwCwC7gFKKAijxKZbgUHdANzGfI5KWt6B9Ry7LZJWdM7YFRGup6S1UU2+tJGAW/0eeBtYBZYDowq6z7J+XYcuJia8gmwOS8KeKNPAZtEdztwU1n3fmlmgDf6KvAYOAdcAi4AHd7oqZwqY8F67wbGc3Q/kI3yguj+EZgWm6VZAq8B92Q3r6am+LdZTlDWbQc2yMgnwAaRhZ2fAk6nlkhVbEyIzeId4I1+C5gEOoOiijTyjDf6ekbVr4A+YBWwP0Pvb8APoqMSFHcCk2K7WAco6/6W0Zlt8FnFG90X1PtGOqeUdd8FnR+QUc/bo2aBbrH9QrQv0hJYLk5IZJpWgtH6HRgB+oN6R+UkGHI2FS0IokVNbHSWLQpcl4b9BUxLkhOGuV+VdYf/R88RiSZJ4MiK6HgTqCnr3i1lMuSNPglsDkaoDjwCBoDdMv2z6u4DjgF/Ah2BAxLgirJub9Pk4t7old7olUW2oa3Azu8BfgJ+9kbvLqod7QU7v57aRFsDb7RqULbipZ4Bsp6/ll28kpEFvgEMAj5HxVpv9AhwQyJKGAL/AD5V1v1XxmToJjAl5/yZjGyvF/heWTf8HDdG2+R0GYbBDgmDK5R1/aVxgDf6niQrTzNGbmH01ynrBoJ6B4FEWXcikI8BvzTQtQzYqqzrKUsUmASeNGjwoCyLkD3AgQz5IPBOzgVJVWxNlCkZquXs5HXZZyaVdXNBvS+BO8xfhn4W5AnTcnCqNDh618qUDPVKg8POe2CHsm4oo+pBSaHvAocy9G4EPpLZVQ+KHwE9i5EMLdYSuAGslg4v5PidwMfKuq6MWXMRuCxn+27gsshCJ3QBO0XXgl4vKfQ/pTkJKuu2MH+t/SEwJM+4su6VBhcoM6n3mbwLDmXdq9LZ94APxMa/YrN8ydBz7BnDwOvBGq/LKN9S1u1r9lxgXU6qm0hZ0ydDVfJ/jFRbwQEJ+T9GklZwwPFUxKinwuVqKVtSivo9fpX56+3bIuoDvLJuPa2EN1p7ozWRSCQSiUQikUgkEolElpJnwrI5R/LzchsAAAAASUVORK5CYII=" alt=""><div class="pt">Get It Together<div class="pt-sub">My GRIT</div></div><button class="theme-btn" id="themeBtn" onclick="toggleTheme()"><svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div>
@@ -142,7 +178,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 <div id="s-checkin" class="scr">
 <div class="hdr"><img class="hdr-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADuUlEQVR42u2ZTWhVRxSAP/OCIS+kTmnMKkXTWmKhixQVFZpWCurCroTSjUwRRKG1glC6GBfuxrWuDOiiA10VLYUKglZaElSqKC2F0jbRgoo1JTrmhieJvugiJ3AZ7n0VDLnX9+aDu7hn7pwzc+bnzJkLkUgkEolEIpFIJBKJtBzLijLsje4B9gJPgWFl3f2WcYA3egyoARMi6gWqyro1S92WtgI6/4V0/BrwUJ5rwIQ3+vOmdwCwC7gFKKAijxKZbgUHdANzGfI5KWt6B9Ry7LZJWdM7YFRGup6S1UU2+tJGAW/0eeBtYBZYDowq6z7J+XYcuJia8gmwOS8KeKNPAZtEdztwU1n3fmlmgDf6KvAYOAdcAi4AHd7oqZwqY8F67wbGc3Q/kI3yguj+EZgWm6VZAq8B92Q3r6am+LdZTlDWbQc2yMgnwAaRhZ2fAk6nlkhVbEyIzeId4I1+C5gEOoOiijTyjDf6ekbVr4A+YBWwP0Pvb8APoqMSFHcCk2K7WAco6/6W0Zlt8FnFG90X1PtGOqeUdd8FnR+QUc/bo2aBbrH9QrQv0hJYLk5IZJpWgtH6HRgB+oN6R+UkGHI2FS0IokVNbHSWLQpcl4b9BUxLkhOGuV+VdYf/R88RiSZJ4MiK6HgTqCnr3i1lMuSNPglsDkaoDjwCBoDdMv2z6u4DjgF/Ah2BAxLgirJub9Pk4t7old7olUW2oa3Azu8BfgJ+9kbvLqod7QU7v57aRFsDb7RqULbipZ4Bsp6/ll28kpEFvgEMAj5HxVpv9AhwQyJKGAL/AD5V1v1XxmToJjAl5/yZjGyvF/heWTf8HDdG2+R0GYbBDgmDK5R1/aVxgDf6niQrTzNGbmH01ynrBoJ6B4FEWXcikI8BvzTQtQzYqqzrKUsUmASeNGjwoCyLkD3AgQz5IPBOzgVJVWxNlCkZquXs5HXZZyaVdXNBvS+BO8xfhn4W5AnTcnCqNDh618qUDPVKg8POe2CHsm4oo+pBSaHvAocy9G4EPpLZVQ+KHwE9i5EMLdYSuAGslg4v5PidwMfKuq6MWXMRuCxn+27gsshCJ3QBO0XXgl4vKfQ/pTkJKuu2MH+t/SEwJM+4su6VBhcoM6n3mbwLDmXdq9LZ94APxMa/YrN8ydBz7BnDwOvBGq/LKN9S1u1r9lxgXU6qm0hZ0ydDVfJ/jFRbwQEJ+T9GklZwwPFUxKinwuVqKVtSivo9fpX56+3bIuoDvLJuPa2EN1p7ozWRSCQSiUQikUgkEolElpJnwrI5R/LzchsAAAAASUVORK5CYII=" alt=""><div class="pt">Check-in ☀️</div></div>
 <div class="dn"><button onclick="chgDay(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><div class="dn-l" id="ci-date"></div><button onclick="chgDay(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button></div>
-<div class="ring-grid" style="grid-template-columns:1fr 1fr" id="ci-scores"></div>
+<div class="ring-grid rg-2" id="ci-scores"></div>
 <div id="ci-form"></div>
 <div class="spacer"></div>
 </div>
@@ -150,7 +186,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 <div id="s-checkout" class="scr">
 <div class="hdr"><img class="hdr-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAADuUlEQVR42u2ZTWhVRxSAP/OCIS+kTmnMKkXTWmKhixQVFZpWCurCroTSjUwRRKG1glC6GBfuxrWuDOiiA10VLYUKglZaElSqKC2F0jbRgoo1JTrmhieJvugiJ3AZ7n0VDLnX9+aDu7hn7pwzc+bnzJkLkUgkEolEIpFIJBKJtBzLijLsje4B9gJPgWFl3f2WcYA3egyoARMi6gWqyro1S92WtgI6/4V0/BrwUJ5rwIQ3+vOmdwCwC7gFKKAijxKZbgUHdANzGfI5KWt6B9Ry7LZJWdM7YFRGup6S1UU2+tJGAW/0eeBtYBZYDowq6z7J+XYcuJia8gmwOS8KeKNPAZtEdztwU1n3fmlmgDf6KvAYOAdcAi4AHd7oqZwqY8F67wbGc3Q/kI3yguj+EZgWm6VZAq8B92Q3r6am+LdZTlDWbQc2yMgnwAaRhZ2fAk6nlkhVbEyIzeId4I1+C5gEOoOiijTyjDf6ekbVr4A+YBWwP0Pvb8APoqMSFHcCk2K7WAco6/6W0Zlt8FnFG90X1PtGOqeUdd8FnR+QUc/bo2aBbrH9QrQv0hJYLk5IZJpWgtH6HRgB+oN6R+UkGHI2FS0IokVNbHSWLQpcl4b9BUxLkhOGuV+VdYf/R88RiSZJ4MiK6HgTqCnr3i1lMuSNPglsDkaoDjwCBoDdMv2z6u4DjgF/Ah2BAxLgirJub9Pk4t7old7olUW2oa3Azu8BfgJ+9kbvLqod7QU7v57aRFsDb7RqULbipZ4Bsp6/ll28kpEFvgEMAj5HxVpv9AhwQyJKGAL/AD5V1v1XxmToJjAl5/yZjGyvF/heWTf8HDdG2+R0GYbBDgmDK5R1/aVxgDf6niQrTzNGbmH01ynrBoJ6B4FEWXcikI8BvzTQtQzYqqzrKUsUmASeNGjwoCyLkD3AgQz5IPBOzgVJVWxNlCkZquXs5HXZZyaVdXNBvS+BO8xfhn4W5AnTcnCqNDh618qUDPVKg8POe2CHsm4oo+pBSaHvAocy9G4EPpLZVQ+KHwE9i5EMLdYSuAGslg4v5PidwMfKuq6MWXMRuCxn+27gsshCJ3QBO0XXgl4vKfQ/pTkJKuu2MH+t/SEwJM+4su6VBhcoM6n3mbwLDmXdq9LZ94APxMa/YrN8ydBz7BnDwOvBGq/LKN9S1u1r9lxgXU6qm0hZ0ydDVfJ/jFRbwQEJ+T9GklZwwPFUxKinwuVqKVtSivo9fpX56+3bIuoDvLJuPa2EN1p7ozWRSCQSiUQikUgkEolElpJnwrI5R/LzchsAAAAASUVORK5CYII=" alt=""><div class="pt">Check-out 🌙</div></div>
 <div class="dn"><button onclick="chgDay(-1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button><div class="dn-l" id="co-date"></div><button onclick="chgDay(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button></div>
-<div class="ring-grid" style="grid-template-columns:1fr 1fr" id="co-scores"></div>
+<div class="ring-grid rg-2" id="co-scores"></div>
 <div id="co-form"></div>
 <div class="spacer"></div>
 </div>
@@ -196,6 +232,61 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 </nav>
 </div>
 <script>
+/* ===== PIN LOCK ===== */
+var pinEntry='',PIN_KEY='grit-pin',PIN_AUTH='grit-auth';
+function pinKey(n){
+  if(pinEntry.length>=4)return;
+  pinEntry+=n;
+  updDots();
+  if(pinEntry.length===4){
+    var stored=localStorage.getItem(PIN_KEY);
+    if(!stored){
+      // First time: setting up PIN — ask confirmation
+      if(!window._pinFirst){
+        window._pinFirst=pinEntry;pinEntry='';updDots();
+        document.getElementById('pinError').textContent='Confirm your PIN';
+        return;
+      }
+      if(window._pinFirst===pinEntry){
+        localStorage.setItem(PIN_KEY,btoa(pinEntry));
+        unlockApp();
+      } else {
+        window._pinFirst=null;pinWrong('PINs don\'t match. Try again');
+      }
+    } else {
+      if(btoa(pinEntry)===stored){unlockApp()}
+      else{pinWrong('Wrong PIN')}
+    }
+  }
+}
+function pinDel(){if(pinEntry.length>0){pinEntry=pinEntry.slice(0,-1);updDots();document.getElementById('pinError').textContent=''}}
+function updDots(){document.querySelectorAll('#pinDots span').forEach(function(d,i){d.className=i<pinEntry.length?'filled':''})}
+function pinWrong(msg){
+  pinEntry='';updDots();
+  document.getElementById('pinError').textContent=msg;
+  document.getElementById('lockScreen').classList.add('shake');
+  setTimeout(function(){document.getElementById('lockScreen').classList.remove('shake')},500);
+}
+function unlockApp(){
+  sessionStorage.setItem(PIN_AUTH,'1');
+  document.getElementById('lockScreen').style.display='none';
+  document.getElementById('mainApp').style.display='';
+}
+function pinSetup(){
+  if(confirm('Reset PIN? This will clear the current PIN and let you set a new one.')){
+    localStorage.removeItem(PIN_KEY);window._pinFirst=null;pinEntry='';updDots();
+    document.getElementById('pinError').textContent='Choose a new 4-digit PIN';
+  }
+}
+(function checkLock(){
+  var hasPin=localStorage.getItem(PIN_KEY);
+  var authed=sessionStorage.getItem(PIN_AUTH);
+  if(!hasPin){
+    document.getElementById('pinError').textContent='Choose a 4-digit PIN';
+    document.querySelector('.lock-sub').textContent='Set up your PIN';
+  }
+  if(hasPin&&authed==='1'){unlockApp();return}
+})();
 /* ===== HABIT DEFINITIONS ===== */
 var IC={
 sl:'<path d="M3 11.5a5 5 0 0110 0"/><path d="M1 11.5h14"/><path d="M4 14h8"/>',
@@ -379,9 +470,9 @@ function ring(pct,color,display,unit,size){
 function ringCard(label,val,color,sub,isScore){
   if(isScore){
     var pct=Math.round(val*10);
-    return '<div class="ring-card">'+ring(pct,color,val.toFixed(1),'/10')+'<div class="rc-label">'+label+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div>';
+    return '<div class="ring-card">'+ring(pct,color,val.toFixed(1),'/10',56)+'<div class="rc-info"><div class="rc-label">'+label+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div></div>';
   }
-  return '<div class="ring-card">'+ring(val,color,val,'%')+'<div class="rc-label">'+label+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div>';
+  return '<div class="ring-card">'+ring(val,color,val,'%',56)+'<div class="rc-info"><div class="rc-label">'+label+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div></div>';
 }
 function dashScores(r,label){
   return ringCard('Check-in',r.am.score,'#F07A5E',label,false)
@@ -394,8 +485,8 @@ function dashScores(r,label){
 function miniScores(r,label,phase){
   var s=phase==='am'?r.am:r.pm;
   var col=phase==='am'?'#F07A5E':'#7E8EF0';
-  return '<div class="ring-card">'+ring(s.score,col,s.score,'%')+'<div class="rc-label">'+(phase==='am'?'Check-in':'Check-out')+'</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div>'
-  +'<div class="ring-card">'+ring(r.total.score,'#50D580',r.total.score,'%')+'<div class="rc-label">Total GRIT</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div>';
+  return '<div class="ring-card">'+ring(s.score,col,s.score,'%',56)+'<div class="rc-info"><div class="rc-label">'+(phase==='am'?'Check-in':'Check-out')+'</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div></div>'
+  +'<div class="ring-card">'+ring(r.total.score,'#50D580',r.total.score,'%',56)+'<div class="rc-info"><div class="rc-label">Total GRIT</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div></div>';
 }
 
 /* ===== WARNINGS ===== */
