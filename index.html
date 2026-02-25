@@ -358,26 +358,32 @@ var H=[
 {k:'meditation',n:'Meditation',r:'2-3x per week',t:'toggle',g:'checkin',desc:'Aim 2-3x/week. Bonus if 4+x/week.',scored:true,phase:'am',bonus:{weeklyThreshold:4,label:'4+ this week'},ic:'md'},
 {k:'healthyBreakfast',n:'Healthy Breakfast',r:'Every day',t:'toggle',g:'checkin',desc:'Nutritious breakfast to start the day.',scored:true,phase:'am',ic:'hb'},
 // CHECK-OUT (evening)
+// -- Self-assessment --
 {k:'physPM',n:'Physical Score PM',r:'Rate 0-10',t:'slider',min:0,max:10,step:0.5,g:'checkout',desc:'How does your body feel tonight?',scored:false,phase:'pm',ic:'ph'},
 {k:'mentPM',n:'Mental Score PM',r:'Rate 0-10',t:'slider',min:0,max:10,step:0.5,g:'checkout',desc:'How does your mind feel tonight?',scored:false,phase:'pm',ic:'mn'},
-{k:'reading',n:'Reading',r:'Min 15 pages',t:'toggle',g:'checkout',desc:'Read at least 15 pages daily.',scored:true,phase:'pm',ic:'rd'},
+// -- Activity --
 {k:'exercise',n:'Exercise',r:'3x per week',t:'toggle',g:'checkout',desc:'Running, cycling, gym. Min 3x/week.',scored:true,phase:'pm',ic:'ex'},
 {k:'exerciseType',n:'Exercise type',r:'',t:'select',opts:['None','Running','Cycling'],g:'checkout',desc:'Track exercise type.',scored:false,phase:'pm',ic:'et'},
-{k:'noScreenBed',n:'No screen bed',r:'Every night',t:'toggle',g:'checkout',desc:'No screens in bed.',scored:true,phase:'pm',ic:'ns'},
-{k:'bedtimeOK',n:'Bedtime OK',r:'22:30-23:00 / 01:00',t:'toggle',g:'checkout',desc:'In bed on time.',scored:true,phase:'pm',ic:'bt'},
+{k:'steps',n:'Steps',r:'Min 10,000',t:'number',min:0,max:99999,tgt:'min',lim:10000,step:500,g:'checkout',desc:'Min 10K. Bonus 15K+. Penalty under 5K.',scored:true,phase:'pm',bonus:{threshold:15000,label:'15K+'},penalty:{under:5000,points:1,label:'under 5K'},ic:'sp'},
 {k:'walks',n:'Walks with Ted',r:'Min 2 per day',t:'number',min:0,max:5,tgt:'min',lim:2,step:1,g:'checkout',desc:'Min 2 walks/day. Bonus at 3+.',scored:true,phase:'pm',bonus:{threshold:3,label:'3+ walks'},ic:'wt'},
+// -- Nutrition & drinks --
+{k:'fruit',n:'2x Fruit',r:'Min 2 per day',t:'toggle',g:'checkout',desc:'Eat at least 2 portions of fruit.',scored:true,phase:'pm',ic:'fr'},
 {k:'coffee',n:'Coffee',r:'Max 3 cups',t:'number',min:0,max:10,tgt:'max',lim:3,step:1,g:'checkout',desc:'Max 3 cups. -1 per cup over 3.',scored:true,phase:'pm',penalty:{over:3,perUnit:1,label:'per cup over 3'},ic:'co'},
 {k:'tea',n:'Tea / Water',r:'Min 2 cups',t:'number',min:0,max:10,tgt:'min',lim:2,step:1,g:'checkout',desc:'Min 2 cups. Bonus at 4+.',scored:true,phase:'pm',bonus:{threshold:4,label:'4+ cups'},ic:'te'},
-{k:'steps',n:'Steps',r:'Min 10,000',t:'number',min:0,max:99999,tgt:'min',lim:10000,step:500,g:'checkout',desc:'Min 10K. Bonus 15K+. Penalty under 5K.',scored:true,phase:'pm',bonus:{threshold:15000,label:'15K+'},penalty:{under:5000,points:1,label:'under 5K'},ic:'sp'},
-{k:'screenMin',n:'Screen time',r:'Max 120 min',t:'number',min:0,max:600,tgt:'max',lim:120,step:15,g:'checkout',desc:'Max 120 min. -1 per 30min over.',scored:true,phase:'pm',penalty:{over:120,perMinBlock:30,label:'per 30min over'},ic:'sc'},
-{k:'fruit',n:'2x Fruit',r:'Min 2 per day',t:'toggle',g:'checkout',desc:'Eat at least 2 portions of fruit.',scored:true,phase:'pm',ic:'fr'},
-{k:'timeRoef',n:'Roef Time',r:'Min 30 min',t:'toggle',g:'checkout',desc:'Quality time with Roef for at least 30 minutes.',scored:true,phase:'pm',ic:'rf'},
-{k:'timeBabette',n:'Babette Time',r:'Min 30 min',t:'toggle',g:'checkout',desc:'Quality time with Babette for at least 30 minutes.',scored:true,phase:'pm',ic:'bb'},
-{k:'lifeGoals',n:'30 min Life Goals',r:'Min 30 min',t:'toggle',g:'checkout',desc:'Work on personal life goals for at least 30 minutes.',scored:true,phase:'pm',ic:'lg'},
-{k:'essentialTasks',n:'Essential Tasks done',r:'Daily',t:'toggle',g:'checkout',desc:'All essential daily tasks completed.',scored:true,phase:'pm',ic:'tk'},
-{k:'madeDay',n:'Made someone\'s day',r:'Daily',t:'toggle',g:'checkout',desc:'Did you truly make someone happy or help them today?',scored:true,phase:'pm',ic:'md2'},
 {k:'alcohol',n:'Alcohol',r:'Max 2x / week',t:'toggle',g:'checkout',desc:'Max 2x/week. -2 penalty for 3rd+.',scored:false,phase:'pm',weeklyLimit:2,penalty:{weeklyOver:2,points:2,label:'3+ this week'},ic:'al'},
 {k:'meatFish',n:'Meat / fish',r:'Weekend, max 2x',t:'toggle',g:'checkout',desc:'Max 2x/week. -1 penalty for 3rd+.',scored:false,phase:'pm',weeklyLimit:2,penalty:{weeklyOver:2,points:1,label:'3+ this week'},ic:'mf'},
+// -- Personal growth --
+{k:'reading',n:'Reading',r:'Min 15 pages',t:'toggle',g:'checkout',desc:'Read at least 15 pages daily.',scored:true,phase:'pm',ic:'rd'},
+{k:'lifeGoals',n:'Life Goals',r:'Min 30 min',t:'toggle',g:'checkout',desc:'Work on personal life goals for at least 30 minutes.',scored:true,phase:'pm',ic:'lg'},
+{k:'essentialTasks',n:'Essential Tasks done',r:'Daily',t:'toggle',g:'checkout',desc:'All essential daily tasks completed.',scored:true,phase:'pm',ic:'tk'},
+{k:'madeDay',n:'Made someone\'s day',r:'Daily',t:'toggle',g:'checkout',desc:'Did you truly make someone happy or help them today?',scored:true,phase:'pm',ic:'md2'},
+// -- Quality time --
+{k:'timeRoef',n:'Roef Time',r:'Min 30 min',t:'toggle',g:'checkout',desc:'Quality time with Roef for at least 30 minutes.',scored:true,phase:'pm',ic:'rf'},
+{k:'timeBabette',n:'Babette Time',r:'Min 30 min',t:'toggle',g:'checkout',desc:'Quality time with Babette for at least 30 minutes.',scored:true,phase:'pm',ic:'bb'},
+// -- Wind down --
+{k:'screenMin',n:'Screen time',r:'Max 120 min',t:'number',min:0,max:600,tgt:'max',lim:120,step:15,g:'checkout',desc:'Max 120 min. -1 per 30min over.',scored:true,phase:'pm',penalty:{over:120,perMinBlock:30,label:'per 30min over'},ic:'sc'},
+{k:'noScreenBed',n:'No screen bed',r:'Every night',t:'toggle',g:'checkout',desc:'No screens in bed.',scored:true,phase:'pm',ic:'ns'},
+{k:'bedtimeOK',n:'Bedtime OK',r:'22:30-23:00 / 01:00',t:'toggle',g:'checkout',desc:'In bed on time.',scored:true,phase:'pm',ic:'bt'},
 ];
 
 var SCORED_AM=H.filter(function(h){return h.scored&&h.phase==='am'});
