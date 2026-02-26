@@ -115,6 +115,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 .rc-u{font-size:10px;font-weight:400;opacity:.6}
 .rc-info{display:flex;flex-direction:column;justify-content:center;min-width:0}
 .rc-label{font-size:13px;font-weight:700;color:var(--t1);letter-spacing:.01em;margin-bottom:1px}
+.rc-bonus{font-size:10px;font-weight:600;color:var(--am);margin-left:6px}
 .rc-sub{font-size:11px;color:var(--t3);font-weight:500}
 /* PIN LOCK */
 .lock-scr{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
@@ -167,6 +168,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 <div class="sh">YoY</div><div class="cmp" id="d-yoy"></div>
 <div class="sh" id="d-top-label">Top Performers</div><div class="pfl" id="d-top"></div>
 <div class="sh" id="d-lag-label">Needs Attention</div><div class="pfl" id="d-lag"></div>
+<div class="sh" id="d-bonus-label">⭐ Bonus Points</div><div class="pfl" id="d-bonus"></div>
 <div class="sh">🔥 Streaks</div><div id="d-streaks" class="pfl"></div>
 <div class="sh">💡 Insights</div><div id="d-insights" class="pfl"></div>
 <div id="d-backup" class="ban" style="display:none"><span>⏰ Weekly backup</span><div class="ban-b"><button onclick="dlJSON();disBkup()">Backup</button><button class="dis" onclick="disBkup()">×</button></div></div>
@@ -197,6 +199,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 <div class="pls" id="t-range" style="margin-bottom:8px"><div class="pl on" data-r="7">7d</div><div class="pl" data-r="14">14d</div><div class="pl" data-r="30">30d</div><div class="pl" data-r="90">90d</div><div class="pl" data-r="mtd">MTD</div><div class="pl" data-r="ytd">YTD</div></div>
 <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px"><label style="font-size:11px;font-weight:600;color:var(--t2);display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="tYoY" onchange="rTrend()" style="accent-color:var(--co)"> vs Same Period Last Year</label></div>
 <div class="chb"><div class="cht">Total GRIT Score</div><canvas id="ch-total" class="chc"></canvas></div>
+<div class="chb"><div class="cht">Bonus Points</div><canvas id="ch-bonus" class="chc"></canvas></div>
 <div class="chb"><div class="cht">Check-in Score</div><canvas id="ch-ci" class="chc"></canvas></div>
 <div class="chb"><div class="cht">Check-out Score</div><canvas id="ch-co" class="chc"></canvas></div>
 <div class="chb"><div class="cht">Physical (AM+PM avg)</div><canvas id="ch-phys" class="chc"></canvas></div>
@@ -437,8 +440,8 @@ function calcScore(e,list,dt){
       if(wc>hh.penalty.weeklyOver)penalty+=(wc-hh.penalty.weeklyOver)*hh.penalty.points;
     }
   }
-  var total=base+bonus-penalty,mx=list.length;
-  return{score:Math.max(0,Math.min(Math.round(total/mx*100),150)),base:base,bonus:bonus,penalty:penalty};
+  var baseScore=Math.max(0,Math.min(Math.round((base-penalty)/list.length*100),100));
+  return{score:baseScore,base:base,bonus:bonus,penalty:penalty,max:list.length};
 }
 
 function calcAll(e,dt){
@@ -446,7 +449,7 @@ function calcAll(e,dt){
   var pm=calcScore(e,SCORED_PM,dt);
   var totalBase=am.base+pm.base,totalBonus=am.bonus+pm.bonus,totalPen=am.penalty+pm.penalty;
   var totalMax=SCORED_ALL.length;
-  var totalScore=Math.max(0,Math.min(Math.round((totalBase+totalBonus-totalPen)/totalMax*100),150));
+  var totalScore=Math.max(0,Math.min(Math.round((totalBase-totalPen)/totalMax*100),100));
   return{
     am:am,pm:pm,
     total:{score:totalScore,base:totalBase,bonus:totalBonus,penalty:totalPen},
@@ -476,17 +479,18 @@ function ring(pct,color,display,unit,size){
   size=size||64;var r=26,circ=2*Math.PI*r,stroke=circ*(1-Math.min(Math.max(pct,0),100)/100);
   var rbg=document.documentElement.classList.contains('light')?'rgba(0,0,0,.06)':'rgba(255,255,255,.06)';return '<div class="rc-ring" style="width:'+size+'px;height:'+size+'px;position:relative"><svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64"><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+rbg+'" stroke-width="5"/><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+circ+'" stroke-dashoffset="'+stroke+'" transform="rotate(-90 32 32)" style="transition:stroke-dashoffset .6s cubic-bezier(.22,.68,0,1)"/></svg><div class="rc-val" style="color:'+color+'">'+display+'<span class="rc-u">'+unit+'</span></div></div>';
 }
-function ringCard(label,val,color,sub,isScore){
+function ringCard(label,val,color,sub,isScore,bonus){
+  var bonusHtml=bonus&&bonus>0?'<span class="rc-bonus">+'+bonus+' ⭐</span>':'';
   if(isScore){
     var pct=Math.round(val*10);
-    return '<div class="ring-card">'+ring(pct,color,pct,'%',56)+'<div class="rc-info"><div class="rc-label">'+label+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div></div>';
+    return '<div class="ring-card">'+ring(pct,color,pct,'%',56)+'<div class="rc-info"><div class="rc-label">'+label+bonusHtml+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div></div>';
   }
-  return '<div class="ring-card">'+ring(val,color,val,'%',56)+'<div class="rc-info"><div class="rc-label">'+label+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div></div>';
+  return '<div class="ring-card">'+ring(val,color,val,'%',56)+'<div class="rc-info"><div class="rc-label">'+label+bonusHtml+'</div>'+(sub?'<div class="rc-sub">'+sub+'</div>':'')+'</div></div>';
 }
 function dashScores(r,label){
-  return ringCard('Check-in',r.am.score,'#F07A5E',label,false)
-  +ringCard('Check-out',r.pm.score,'#7E8EF0',label,false)
-  +ringCard('Total GRIT',r.total.score,'#50D580',label,false)
+  return ringCard('Check-in',r.am.score,'#F07A5E',label,false,r.am.bonus)
+  +ringCard('Check-out',r.pm.score,'#7E8EF0',label,false,r.pm.bonus)
+  +ringCard('Total GRIT',r.total.score,'#50D580',label,false,r.total.bonus)
   +ringCard('Physical',r.phys!=null?r.phys:0,'#40D1C5',label,r.phys!=null)
   +ringCard('Mental',r.ment!=null?r.ment:0,'#A87BFA',label,r.ment!=null)
   +ringCard('Sleep',r.sleep!=null?r.sleep:0,'#F5C842',label,r.sleep!=null);
@@ -494,8 +498,10 @@ function dashScores(r,label){
 function miniScores(r,label,phase){
   var s=phase==='am'?r.am:r.pm;
   var col=phase==='am'?'#F07A5E':'#7E8EF0';
-  return '<div class="ring-card">'+ring(s.score,col,s.score,'%',56)+'<div class="rc-info"><div class="rc-label">'+(phase==='am'?'Check-in':'Check-out')+'</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div></div>'
-  +'<div class="ring-card">'+ring(r.total.score,'#50D580',r.total.score,'%',56)+'<div class="rc-info"><div class="rc-label">Total GRIT</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div></div>';
+  var bH=s.bonus>0?'<span class="rc-bonus">+'+s.bonus+' ⭐</span>':'';
+  var tH=r.total.bonus>0?'<span class="rc-bonus">+'+r.total.bonus+' ⭐</span>':'';
+  return '<div class="ring-card">'+ring(s.score,col,s.score,'%',56)+'<div class="rc-info"><div class="rc-label">'+(phase==='am'?'Check-in':'Check-out')+bH+'</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div></div>'
+  +'<div class="ring-card">'+ring(r.total.score,'#50D580',r.total.score,'%',56)+'<div class="rc-info"><div class="rc-label">Total GRIT'+tH+'</div>'+(label?'<div class="rc-sub">'+label+'</div>':'')+'</div></div>';
 }
 
 /* ===== WARNINGS ===== */
@@ -536,11 +542,12 @@ function rDash(){
     document.getElementById('d-scores').innerHTML=dashScores(r,'today');
     document.getElementById('d-warns').innerHTML=getWarnings(e,td).map(function(w){return'<div class="warn"><span>⚠️</span>'+w+'</div>'}).join('');
   } else {
-    var mCI=[],mCO=[],mT=[],mP=[],mM=[],mSl=[],cnt=0;
-    for(var i=0;i<dashKeys.length;i++){var k=dashKeys[i],v=data[k];if(!v)continue;var r2=calcAll(v,new Date(k+'T12:00:00'));mCI.push(r2.am.score);mCO.push(r2.pm.score);mT.push(r2.total.score);if(r2.phys!=null)mP.push(r2.phys);if(r2.ment!=null)mM.push(r2.ment);if(r2.sleep!=null)mSl.push(r2.sleep);cnt++;}
+    var mCI=[],mCO=[],mT=[],mP=[],mM=[],mSl=[],cnt=0,mBam=[],mBpm=[],mBtot=[];
+    for(var i=0;i<dashKeys.length;i++){var k=dashKeys[i],v=data[k];if(!v)continue;var r2=calcAll(v,new Date(k+'T12:00:00'));mCI.push(r2.am.score);mCO.push(r2.pm.score);mT.push(r2.total.score);if(r2.phys!=null)mP.push(r2.phys);if(r2.ment!=null)mM.push(r2.ment);if(r2.sleep!=null)mSl.push(r2.sleep);mBam.push(r2.am.bonus);mBpm.push(r2.pm.bonus);mBtot.push(r2.total.bonus);cnt++;}
     var av=function(a){return a.length?Math.round(a.reduce(function(x,y){return x+y},0)/a.length):0};
     var avF=function(a){return a.length?parseFloat((a.reduce(function(x,y){return x+y},0)/a.length).toFixed(1)):null};
-    var fakeR={am:{score:av(mCI)},pm:{score:av(mCO)},total:{score:av(mT)},phys:avF(mP),ment:avF(mM),sleep:avF(mSl)};
+    var sm=function(a){return a.reduce(function(x,y){return x+y},0)};
+    var fakeR={am:{score:av(mCI),bonus:sm(mBam)},pm:{score:av(mCO),bonus:sm(mBpm)},total:{score:av(mT),bonus:sm(mBtot)},phys:avF(mP),ment:avF(mM),sleep:avF(mSl)};
     document.getElementById('d-scores').innerHTML=dashScores(fakeR,dd.label+' · '+cnt+'d');
     document.getElementById('d-warns').innerHTML='';
   }
@@ -562,6 +569,25 @@ function rDash(){
   document.getElementById('d-lag-label').innerHTML='Needs Attention <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:9px">('+pLabel+')</span>';
   document.getElementById('d-top').innerHTML=ranked.length?pfH(ranked.slice(0,3)):'<div class="emp">Start tracking</div>';
   document.getElementById('d-lag').innerHTML=ranked.length?pfH(ranked.slice(-3).reverse()):'<div class="emp">Start tracking</div>';
+
+  // Bonus Points breakdown
+  var bonusHabits=H.filter(function(h){return h.bonus});
+  var bonusStats=[];
+  for(var b=0;b<bonusHabits.length;b++){
+    var bh=bonusHabits[b],bHit=0,bTot=0;
+    for(var b2=0;b2<perfKeys.length;b2++){
+      var bx=data[perfKeys[b2]];if(!bx)continue;bTot++;
+      var bdt=new Date(perfKeys[b2]+'T12:00:00');
+      if(bh.bonus.weeklyThreshold){if(weekCount(bh.k,bdt)>=bh.bonus.weeklyThreshold)bHit++}
+      else if(bh.bonus.threshold){var bv=bx[bh.k]||0;if(bv>=bh.bonus.threshold)bHit++}
+    }
+    bonusStats.push({n:bh.n,label:bh.bonus.label||'',hit:bHit,tot:bTot,pct:bTot>0?Math.round(bHit/bTot*100):0});
+  }
+  var bonusHtml=bonusStats.map(function(bs){
+    return'<div class="pf"><span class="pf-n">'+bs.n+' <span style="font-size:9px;color:var(--t3);font-weight:400">'+bs.label+'</span></span><span class="pf-p '+(bs.pct>=70?'hi':bs.pct>=40?'md':'lo')+'">'+bs.hit+'/'+bs.tot+' ('+bs.pct+'%)</span></div>';
+  }).join('');
+  document.getElementById('d-bonus-label').innerHTML='⭐ Bonus Points <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:9px">('+pLabel+')</span>';
+  document.getElementById('d-bonus').innerHTML=bonusStats.length?bonusHtml:'<div class="emp">No bonus habits</div>';
 
   rStreaks(data,td);rInsights(data,td);chkBkup();chkBan();
 }
@@ -673,17 +699,18 @@ function rTrend(){
   for(var i=0;i<tDays.length;i++){
     var d=tDays[i],k=DK(d),e=data[k]||{},has=Object.keys(e).length>0;
     var r=has?calcAll(e,d):null;
-    days.push({l:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),ci:r?r.am.score:null,co:r?r.pm.score:null,total:r?r.total.score:null,phys:r?r.phys:null,ment:r?r.ment:null,sleep:r?r.sleep:null});
+    days.push({l:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),ci:r?r.am.score:null,co:r?r.pm.score:null,total:r?r.total.score:null,bonus:r?r.total.bonus:null,phys:r?r.phys:null,ment:r?r.ment:null,sleep:r?r.sleep:null});
   }
   if(showLY){
     for(var j=0;j<lyTDays.length;j++){
       var ld=lyTDays[j],lk=DK(ld),le=data[lk]||{},lhas=Object.keys(le).length>0;
       var lr=lhas?calcAll(le,ld):null;
-      lyData.push({ci:lr?lr.am.score:null,co:lr?lr.pm.score:null,total:lr?lr.total.score:null,phys:lr?lr.phys:null,ment:lr?lr.ment:null,sleep:lr?lr.sleep:null});
+      lyData.push({ci:lr?lr.am.score:null,co:lr?lr.pm.score:null,total:lr?lr.total.score:null,bonus:lr?lr.total.bonus:null,phys:lr?lr.phys:null,ment:lr?lr.ment:null,sleep:lr?lr.sleep:null});
     }
   }
   var lyV=function(key){return showLY?lyData.map(function(x){return x[key]}):null};
   drawCh('ch-total',days.map(function(x){return x.total}),days.map(function(x){return x.l}),100,'#50D580',lyV('total'));
+  drawCh('ch-bonus',days.map(function(x){return x.bonus}),days.map(function(x){return x.l}),4,'#F5C842',lyV('bonus'));
   drawCh('ch-ci',days.map(function(x){return x.ci}),days.map(function(x){return x.l}),100,'#F07A5E',lyV('ci'));
   drawCh('ch-co',days.map(function(x){return x.co}),days.map(function(x){return x.l}),100,'#7E8EF0',lyV('co'));
   drawCh('ch-phys',days.map(function(x){return x.phys}),days.map(function(x){return x.l}),10,'#40D1C5',lyV('phys'));
